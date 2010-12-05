@@ -45,9 +45,10 @@ int main(void)
 {
 
   //Setup jumper inputs
-  DDRB &= ~(1<<PB1);	//PB1 as input
-  PORTB |= (1<<PB1);	//Enable pull-up on PB1
+  DDRB &= ~(1<<PB0 | 1<<PB1);	//PB0 and PB1 as input
+  PORTB |= 1<<PB0 | 1<<PB1;	//Enable pull-ups
   unsigned char tracker = 0;
+  unsigned char testmode = 0;
 
   //Setup LED pins
   PORTB |= white;
@@ -91,6 +92,8 @@ int main(void)
     }
   }
 
+  if (~PINB & (1<<PB0)) testmode = 1;
+
   init_timers();
 
 
@@ -104,8 +107,9 @@ int main(void)
       OCR0A = tracker;
       delay_ms(20);
     }
-    //Red for 2 seconds
-    delay_min(20);
+    //Red for 2 seconds or 20 minutes
+    if (testmode) delay_ms(2000);
+    else delay_min(20);
 
     //Step down red
     tracker = 255;
@@ -118,7 +122,8 @@ int main(void)
 
     //Go dark for a while
     curr_color = black;
-    delay_ms(30000);
+    if (testmode) delay_ms(500);
+    else delay_ms(30000);
 
     //fade in green
     curr_color = green;
@@ -127,8 +132,9 @@ int main(void)
       OCR0A = tracker;
       delay_ms(20);
     }
-    //Red for 2 seconds
-    delay_min(20);
+    //Green for 2 seconds or 20 minutes
+    if (testmode) delay_ms(2000);
+    else delay_min(20);
 
     //Step down green
     tracker = 255;
@@ -140,7 +146,8 @@ int main(void)
 
     //Go dark for a while
     curr_color = black;
-    delay_ms(30000);
+    if (testmode) delay_ms(500);
+    else delay_ms(30000);
 
   }
 }
